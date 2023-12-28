@@ -1,4 +1,14 @@
 import pandas as pd
+
+def print_sorted_dict(d, title):
+    print(title)
+    # Sort the dictionary by value in descending order and print the items
+    for key, value in sorted(d.items(), key=lambda item: item[1], reverse=True):
+        print(f"{key}: {value}")
+
+    print('')
+
+
 # Function to tally IP addresses across multiple dataframes
 
 def tally_ips(dfs):

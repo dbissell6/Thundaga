@@ -7,11 +7,14 @@ from collections import defaultdict
 from pandas import json_normalize
 import matplotlib.pyplot as plt
 import seaborn as sns
-from plot_functions import print_hello_world
-from basic_stats import tally_ips, tally_user_arns, tally_buckets
+from plot_functions import get_rows_by_ips, create_ip_plot, print_hello_world
+from basic_stats import print_sorted_dict, tally_ips, tally_user_arns, tally_buckets
+
 parser = argparse.ArgumentParser(description='AWS Log Analysis Tool')
 parser.add_argument('--mode', choices=['read', 'analyze', 'stats'], help='Mode of operation: read or analyze')
 parser.add_argument('--dir',  dest = 'dir', help='Directory to start looking from')
+parser.add_argument('--analyze', choices=['IPs','else'], help='If Mode of operation is analyze')
+parser.add_argument('--IPs',  dest = 'IPs', nargs='+', help='If you analyzing IPs, need to pick some IPs')
 args = parser.parse_args()
 
 
@@ -113,20 +116,26 @@ def main():
     if args.mode == 'read':
         # Read and process logs, then save DataFrames
         dfs = read_and_process_logs()
+        # Create directory to save dfs to
+        save_dir = 'saved_dfs'
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
         #Save the DataFrames to files
         print('Saving Pickles')
         for name, df in dfs.items():
-            df.to_pickle(f'{name}.pkl')  # or df.to_csv for CSV files
+            df.to_pickle(os.path.join(save_dir, f'{name}.pkl'))  # or df.to_csv for CSV files
         # Create dataframe metadata
         print_metadata()
 
     elif args.mode == 'stats':
         # Check if DataFrame files exist and load them
         dfs = {}
-        for file in os.listdir('.'):
+        save_dir = 'saved_dfs'
+        for file in os.listdir(save_dir):
             if file.endswith('.pkl'):
                 df_name = file.split('.')[0]
-                dfs[df_name] = pd.read_pickle(file)
+                file_path = os.path.join(save_dir, file)
+                dfs[df_name] = pd.read_pickle(file_path)
 
         # Perform stats on the loaded DataFrames
         basic_stats(dfs)
@@ -135,10 +144,12 @@ def main():
     elif args.mode == 'analyze':
         # Check if DataFrame files exist and load them
         dfs = {}
-        for file in os.listdir('.'):
+        save_dir = 'saved_dfs'
+        for file in os.listdir(save_dir):
             if file.endswith('.pkl'):
                 df_name = file.split('.')[0]
-                dfs[df_name] = pd.read_pickle(file)
+                file_path = os.path.join(save_dir, file)
+                dfs[df_name] = pd.read_pickle(file_path)
 
         # Perform analysis on the loaded DataFrames
         analyze_data(dfs)
@@ -158,18 +169,24 @@ def read_and_process_logs():
 def basic_stats(dfs):
     # Perform analysis on DataFrames
     ip_counts = tally_ips(dfs)
-    print(ip_counts)
+    print_sorted_dict(ip_counts,'Ip Counts')
     user_arn_counts = tally_user_arns(dfs)
-    print(user_arn_counts)
+    print_sorted_dict(user_arn_counts, "ARNs")
     bucket_counts = tally_buckets(dfs)
-    print(bucket_counts)
+    print_sorted_dict(bucket_counts, "Buckets")
 
 
 
 # Function to analyze the data (to be implemented)
 def analyze_data(dfs):
-    # Perform analysis on DataFrames
-    print_hello_world()
+   if args.analyze == 'IPs':
+        ips_to_search = args.IPs
+        print('Searching IPs '+ str(ips_to_search))
+        resulting_df = get_rows_by_ips(dfs, ips_to_search)
+        create_ip_plot(resulting_df)
+   else:
+       # Perform analysis on DataFrames
+       print_hello_world()
 
 
 
