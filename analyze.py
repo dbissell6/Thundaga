@@ -8,9 +8,9 @@ from pandas import json_normalize
 import matplotlib.pyplot as plt
 import seaborn as sns
 from plot_functions import print_hello_world
-
+from basic_stats import tally_ips, tally_user_arns, tally_buckets
 parser = argparse.ArgumentParser(description='AWS Log Analysis Tool')
-parser.add_argument('--mode', choices=['read', 'analyze'], help='Mode of operation: read or analyze')
+parser.add_argument('--mode', choices=['read', 'analyze', 'stats'], help='Mode of operation: read or analyze')
 parser.add_argument('--dir',  dest = 'dir', help='Directory to start looking from')
 args = parser.parse_args()
 
@@ -99,7 +99,6 @@ def print_metadata():
         for file in os.listdir(cdir):
             if file.endswith('.pkl'):
                 df_path = os.path.join(cdir, file)
-                print(df_path)
                 df = pd.read_pickle(file)
                 metafile.write(f"DataFrame from {file}:\n")
                 metafile.write(f"Shape: {df.shape}\n")
@@ -114,12 +113,24 @@ def main():
     if args.mode == 'read':
         # Read and process logs, then save DataFrames
         dfs = read_and_process_logs()
-        # Create dataframe metadata
-        print_metadata()
         #Save the DataFrames to files
         print('Saving Pickles')
         for name, df in dfs.items():
             df.to_pickle(f'{name}.pkl')  # or df.to_csv for CSV files
+        # Create dataframe metadata
+        print_metadata()
+
+    elif args.mode == 'stats':
+        # Check if DataFrame files exist and load them
+        dfs = {}
+        for file in os.listdir('.'):
+            if file.endswith('.pkl'):
+                df_name = file.split('.')[0]
+                dfs[df_name] = pd.read_pickle(file)
+
+        # Perform stats on the loaded DataFrames
+        basic_stats(dfs)
+
 
     elif args.mode == 'analyze':
         # Check if DataFrame files exist and load them
@@ -143,10 +154,25 @@ def read_and_process_logs():
     fix_columns(dfs)
     return dfs
 
+# Function to do basic stats on the data
+def basic_stats(dfs):
+    # Perform analysis on DataFrames
+    ip_counts = tally_ips(dfs)
+    print(ip_counts)
+    user_arn_counts = tally_user_arns(dfs)
+    print(user_arn_counts)
+    bucket_counts = tally_buckets(dfs)
+    print(bucket_counts)
+
+
+
 # Function to analyze the data (to be implemented)
 def analyze_data(dfs):
     # Perform analysis on DataFrames
     print_hello_world()
+
+
+
 
 
 if __name__ == '__main__':
