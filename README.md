@@ -1,7 +1,8 @@
 # Thundaga
 No more jq
 
-![Screenshot 2023-12-28 185954](https://github.com/dbissell6/Thundaga/assets/50979196/f9fa64e4-a24c-49f9-8434-632b3cef70b7)
+![Screenshot 2023-12-28 190939](https://github.com/dbissell6/Thundaga/assets/50979196/6b068dc4-65e0-411e-b33a-6f6bde662edb)
+
 
 # Use
 
