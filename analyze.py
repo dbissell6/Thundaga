@@ -1,5 +1,6 @@
 import argparse
 import os
+import shutil
 import json
 import pandas as pd
 from glob import glob
@@ -12,7 +13,7 @@ from plot_functions import get_rows_by_bucket, create_bucket_event_plot
 from basic_stats import print_sorted_dict, tally_ips, tally_user_arns, tally_buckets
 
 parser = argparse.ArgumentParser(description='AWS Log Analysis Tool')
-parser.add_argument('--mode', choices=['read', 'analyze', 'stats'], help='Mode of operation: read or analyze')
+parser.add_argument('--mode', choices=['read', 'analyze', 'stats','clean'], help='Mode of operation')
 parser.add_argument('--dir',  dest = 'dir', help='Directory to start looking from')
 parser.add_argument('--analyze', choices=['IPs','arn','bucket','else'], help='If Mode of operation is analyze')
 parser.add_argument('--IPs',  dest = 'IPs', nargs='+', help='If youre analyzing IPs, need to pick some IPs')
@@ -55,46 +56,43 @@ def create_dataframes_by_event_name(directory):
     return dataframes
 
 # Some columns didnt get djsoned all the way
+
+def normalize_and_concat(df, column_name, prefix):
+    try:
+        # Check if the column contains lists with a single dictionary
+        if df[column_name].apply(lambda x: isinstance(x, list)).all():
+            df[column_name] = df[column_name].apply(lambda x: x[0] if len(x) == 1 else x)
+        
+        # Normalize the column
+        normalized_df = json_normalize(df[column_name], sep='_')
+        normalized_df.columns = [f'{prefix}{col}' for col in normalized_df.columns]
+        
+        # Concatenate the normalized data with the original dataframe
+        return pd.concat([df.drop(columns=[column_name]), normalized_df], axis=1)
+    except Exception as e:
+        print(f"Error normalizing {column_name}: {e}")
+        # Return the original DataFrame if normalization fails
+        return df
+
 def fix_columns(dfs):
-  for event_name, df in dfs.items():
-        # Check if 'userIdentity' column exists in the dataframe
+    for event_name, df in dfs.items():
+        # Apply normalization to 'userIdentity' column
         if 'userIdentity' in df.columns:
-            # Normalize the 'userIdentity' column
-            userIdentity_normalized = json_normalize(df['userIdentity'], sep='_', record_prefix='userIdentity')
+            df = normalize_and_concat(df, 'userIdentity', 'userIdentity_')
 
-
-            prefix = 'userIdentity_'
-            userIdentity_normalized = userIdentity_normalized.rename(columns={col: f'{prefix}{col}' for col in userIdentity_normalized.columns})
-
-            # Concatenate the normalized userIdentity data with the original dataframe
-            # Make sure to align the index to ensure the data matches up correctly
-            dfs[event_name] = pd.concat([df.drop(columns=['userIdentity']), userIdentity_normalized], axis=1)
-
-
+        # Apply normalization to 'requestParameters' column
         if 'requestParameters' in df.columns:
-            try:
-                # Try to normalize the 'requestParameters' column
-                requestParameters_normalized = json_normalize(df['requestParameters'], sep='_', record_prefix='requestParameters_')
-                prefix = 'requestParameters_'
-                requestParameters_normalized = requestParameters_normalized.rename(columns={col: f'{prefix}{col}' for col in requestParameters_normalized.columns})
+            df = normalize_and_concat(df, 'requestParameters', 'requestParameters_')
 
-                # Concatenate the normalized userIdentity data with the original dataframe
-                # Rename the columns with prefix and concatenate with the original dataframe
-                dfs[event_name] = pd.concat([df.drop(columns=['requestParameters']), requestParameters_normalized], axis=1)
+        # Apply normalization to 'resources' column
+        if 'resources' in df.columns:
+            df = normalize_and_concat(df, 'resources', 'resources_')
 
-            except (ValueError, AttributeError):
-                # Try to extract from list if normalization fails
-                try:
-                    # Assuming that if it's a list, we take the first element
-                    df['requestParameters'] = df['requestParameters'].apply(lambda x: x[0] if isinstance(x, list) and x else x)
-                    # Try normalization again after extracting from list
-                    requestParameters_normalized = json_normalize(df['requestParameters'], sep='_', record_prefix='requestParameters_')
-                    dfs[event_name] = pd.concat([df.drop(columns=['requestParameters']), requestParameters_normalized], axis=1)
+        # Update the original dictionary
+        dfs[event_name] = df
 
-                except (ValueError, AttributeError, IndexError):
-                    # Skip this dataframe if second normalization also fails
-                    #print(f"Skipping normalization for 'requestParameters' in DataFrame: {event_name}")
-                    pass
+    return dfs
+
 
 
 # Inside analyze.py
@@ -159,6 +157,13 @@ def main():
         # Perform analysis on the loaded DataFrames
         analyze_data(dfs)
 
+    elif args.mode == 'clean':
+        # removes everything we made
+        files_and_dirs_to_cleanup = ['metadata.txt', 'saved_dfs', '__pycache__']
+        clean(files_and_dirs_to_cleanup)
+
+
+
 # Function to read and process logs (to be implemented)
 def read_and_process_logs():
     # Read log files and create DataFrames
@@ -204,6 +209,13 @@ def analyze_data(dfs):
        # Perform analysis on DataFrames
        print_hello_world()
 
+
+def clean(files_and_dirs):
+    for item in files_and_dirs:
+        if os.path.isfile(item):
+            os.remove(item)
+        elif os.path.isdir(item):
+            shutil.rmtree(item)
 
 
 if __name__ == '__main__':
