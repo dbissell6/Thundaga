@@ -70,3 +70,43 @@ def create_ip_plot(resulting_df):
     
     # Show the plot
     plt.show()
+
+
+
+### Next functions do something similar for arns
+
+def get_rows_by_arn(dfs, arn_of_interest):
+    df_final = pd.DataFrame()
+
+    for df_name, df in dfs.items():
+        if 'userIdentity_arn' in df.columns:
+            # Filter rows where the userIdentity_arn matches the ARN of interest
+            matching_rows = df[df['userIdentity_arn'] == arn_of_interest].copy()
+            if not matching_rows.empty:
+                matching_rows.loc[:, 'EventName'] = df_name
+                df_final = pd.concat([df_final, matching_rows], ignore_index=True)
+
+    return df_final
+
+def create_arn_plot(resulting_df, arn_to_search):
+    unique_event_names = resulting_df['eventName'].unique()
+    markers = ['o', 's', '^', 'P', '*', 'D', 'X', '<', '>']
+    colors = plt.cm.tab10(np.linspace(0, 1, len(unique_event_names)))
+
+    event_marker_color_map = {event_name: {'marker': markers[i % len(markers)], 'color': colors[i]} for i, event_name in enumerate(unique_event_names)}
+
+    plt.figure(figsize=(15, 10))
+    resulting_df['y_level'] = resulting_df['sourceIPAddress'].astype("category").cat.codes
+
+    for event_name, group in resulting_df.groupby('eventName'):
+        plt.scatter(group['eventTime'], group['y_level'], alpha=0.7, marker=event_marker_color_map[event_name]['marker'], color=event_marker_color_map[event_name]['color'], label=event_name)
+
+    plt.yticks(resulting_df['y_level'].unique(), resulting_df['sourceIPAddress'].unique())
+    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.xlabel('Event Time')
+    plt.ylabel('IP Address')
+    plt.title(f'Event Activities Over Time for ARN: {arn_to_search}')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.show()
+
