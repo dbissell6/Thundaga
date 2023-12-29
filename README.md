@@ -20,3 +20,10 @@ No more jq
 
 
 ![image](https://github.com/dbissell6/Thundaga/assets/50979196/73bd403a-ea66-4678-8001-eec221f84556)
+
+## Investigate Arn
+
+![image](https://github.com/dbissell6/Thundaga/assets/50979196/2665b48a-422e-46b2-8adb-07a8e601866e)
+
+![image](https://github.com/dbissell6/Thundaga/assets/50979196/e514ad84-148b-4b77-93bc-88f46c363bcd)
+
