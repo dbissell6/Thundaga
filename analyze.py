@@ -8,14 +8,17 @@ from pandas import json_normalize
 import matplotlib.pyplot as plt
 import seaborn as sns
 from plot_functions import get_rows_by_ips, create_ip_plot, print_hello_world, get_rows_by_arn, create_arn_plot
+from plot_functions import get_rows_by_bucket, create_bucket_event_plot
 from basic_stats import print_sorted_dict, tally_ips, tally_user_arns, tally_buckets
 
 parser = argparse.ArgumentParser(description='AWS Log Analysis Tool')
 parser.add_argument('--mode', choices=['read', 'analyze', 'stats'], help='Mode of operation: read or analyze')
 parser.add_argument('--dir',  dest = 'dir', help='Directory to start looking from')
-parser.add_argument('--analyze', choices=['IPs','arn','else'], help='If Mode of operation is analyze')
+parser.add_argument('--analyze', choices=['IPs','arn','bucket','else'], help='If Mode of operation is analyze')
 parser.add_argument('--IPs',  dest = 'IPs', nargs='+', help='If youre analyzing IPs, need to pick some IPs')
 parser.add_argument('--arn',  dest = 'arn', help='If youre analyzing an arn, need to pick a arn')
+parser.add_argument('--bucket',  dest = 'bucket', help='If youre analyzing an bucket, need to pick a bucket')
+
 
 args = parser.parse_args()
 
@@ -191,12 +194,15 @@ def analyze_data(dfs):
         print('Slicing '+ arn_to_search)
         resulting_df = get_rows_by_arn(dfs, arn_to_search)
         create_arn_plot(resulting_df, arn_to_search)
+   elif args.analyze == 'bucket':
+        bucket_to_search = args.bucket
+        print('Slicing '+ bucket_to_search)
+        resulting_df = get_rows_by_bucket(dfs, bucket_to_search)
+        create_bucket_event_plot(resulting_df, bucket_to_search)
 
    else:
        # Perform analysis on DataFrames
        print_hello_world()
-
-
 
 
 
