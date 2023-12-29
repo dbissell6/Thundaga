@@ -27,3 +27,9 @@ No more jq
 
 ![image](https://github.com/dbissell6/Thundaga/assets/50979196/e514ad84-148b-4b77-93bc-88f46c363bcd)
 
+## Investigate Bucket
+
+![image](https://github.com/dbissell6/Thundaga/assets/50979196/ef7c8509-adda-44cd-ac05-94c76f03a313)
+
+![image](https://github.com/dbissell6/Thundaga/assets/50979196/c8002a22-5a46-40a2-8efb-c3c862aba0f3)
+
