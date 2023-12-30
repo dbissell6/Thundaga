@@ -40,6 +40,16 @@ No more jq
 
 ![image](https://github.com/dbissell6/Thundaga/assets/50979196/96ce74c8-28ef-4458-9549-745e63c7211c)
 
+## Misc
+
+### Exclude IPs
+
+Some plots allow excluding IPs
+
+![image](https://github.com/dbissell6/Thundaga/assets/50979196/a08758af-cf12-4e06-92ee-5f77c29d27c0)
+
+
+
 # query
 
 ## strings
