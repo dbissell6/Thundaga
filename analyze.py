@@ -145,7 +145,6 @@ def main():
         # Perform stats on the loaded DataFrames
         basic_stats(dfs)
 
-
     elif args.mode == 'analyze':
         # Check if DataFrame files exist and load them
         dfs = {}
@@ -162,11 +161,9 @@ def main():
     elif args.mode == 'query':
         query_data()
 
-
-
     elif args.mode == 'clean':
         # removes everything we made
-        files_and_dirs_to_cleanup = ['metadata.txt', 'saved_dfs', '__pycache__']
+        files_and_dirs_to_cleanup = ['metadata.txt', 'saved_dfs', '__pycache__','query_output.txt']
         clean(files_and_dirs_to_cleanup)
 
 
@@ -222,6 +219,7 @@ def analyze_data(dfs):
 def query_data():
     if args.query == 'string':
         print_rows_with_separator(args.strings[0],args.strings[1])
+        print('File saved to query_output.txt')
     
 
 
