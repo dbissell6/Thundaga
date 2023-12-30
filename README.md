@@ -1,10 +1,19 @@
 # Thundaga
-No more jq
+
+Thundaga is forensic analysis tool designed to efficiently parse and visualize AWS CloudTrail logs. 
+
+Humans invested lots of evolutionary points into vision, let's use it.
 
 ![Screenshot 2023-12-28 190939](https://github.com/dbissell6/Thundaga/assets/50979196/6b068dc4-65e0-411e-b33a-6f6bde662edb)
 
 
 # Use
+
+1) Every use will begin with reading and parsing the data. Converting the json to dataframes based on eventName.
+
+2) stats, analyze, query
+
+3) clean
 
 # Read
 
