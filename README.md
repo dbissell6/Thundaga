@@ -33,3 +33,9 @@ No more jq
 
 ![image](https://github.com/dbissell6/Thundaga/assets/50979196/c8002a22-5a46-40a2-8efb-c3c862aba0f3)
 
+## Clean-up
+
+Remove files created during analysis
+
+![image](https://github.com/dbissell6/Thundaga/assets/50979196/d910f1f9-9026-4f47-9d0c-36f20ea28d17)
+
