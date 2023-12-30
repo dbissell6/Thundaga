@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-
+import os
 
 
 
@@ -175,4 +175,69 @@ def create_bucket_event_plot(resulting_df, bucket_of_interest):
     # Show the plot
     plt.show()
 
+
+### Create plots for anons
+
+def search_and_plot_anonymous_events(column_name='eventName'):
+    anonymous_entries = {}
+    path = './saved_dfs'
+    
+    # List all .pkl files in the directory
+    pkl_files = [file for file in os.listdir(path) if file.endswith('.pkl')]
+    df_final = pd.DataFrame()
+
+    # Loop through the .pkl files
+    for file in pkl_files:
+        # Read the DataFrame
+        df = pd.read_pickle(os.path.join(path, file))
+        
+        # Check each row for 'anonymous'
+        for index, row in df.iterrows():
+            if 'anonymous' in row.astype(str).values:
+                # Record the event name and IP if 'anonymous' is found
+                event_name = row.get(column_name, 'No-Event-Name-Column')
+                ip_address = row.get('sourceIPAddress', 'No-IP-Address-Column')
+
+                # Create a new DataFrame from the anonymous rows
+                anonymous_row = df.loc[[index]]
+                anonymous_row['EventName'] = event_name
+                df_final = pd.concat([df_final, anonymous_row], ignore_index=True)
+
+
+    # Proceed with plotting if we found any anonymous events
+    if not df_final.empty:
+        unique_event_names = df_final['EventName'].unique()
+        markers = ['o', 's', '^', 'P', '*', 'D', 'X', '<', '>']
+        colors = plt.cm.tab10(np.linspace(0, 1, len(unique_event_names)))
+
+        event_marker_color_map = {
+            event_name: {
+                'marker': markers[i % len(markers)],
+                'color': colors[i]
+            } for i, event_name in enumerate(unique_event_names)
+        }
+
+        plt.figure(figsize=(15, 10))
+        df_final['y_level'] = df_final['sourceIPAddress'].astype("category").cat.codes
+
+        for event_name, group in df_final.groupby('EventName'):
+            plt.scatter(
+                pd.to_datetime(group['eventTime']),
+                group['y_level'],
+                alpha=0.7,
+                marker=event_marker_color_map[event_name]['marker'],
+                color=event_marker_color_map[event_name]['color'],
+                label=event_name
+            )
+
+        plt.yticks(df_final['y_level'].unique(), df_final['sourceIPAddress'].unique())
+        plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+        plt.xlabel('Event Time')
+        plt.ylabel('IP Address')
+        plt.title('Event Activities Over Time for Anonymous Events')
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+        plt.show()
+
+    return df_final
 

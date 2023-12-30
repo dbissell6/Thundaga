@@ -9,20 +9,22 @@ from pandas import json_normalize
 import matplotlib.pyplot as plt
 import seaborn as sns
 from plot_functions import get_rows_by_ips, create_ip_plot, print_hello_world, get_rows_by_arn, create_arn_plot
-from plot_functions import get_rows_by_bucket, create_bucket_event_plot
+from plot_functions import get_rows_by_bucket, create_bucket_event_plot, search_and_plot_anonymous_events
 from basic_stats import print_sorted_dict, tally_ips, tally_user_arns, tally_buckets
+from query import print_rows_with_separator
 
 parser = argparse.ArgumentParser(description='AWS Log Analysis Tool')
-parser.add_argument('--mode', choices=['read', 'analyze', 'stats','clean'], help='Mode of operation')
+parser.add_argument('--mode', choices=['read', 'analyze', 'stats','query','clean'], help='Mode of operation')
 parser.add_argument('--dir',  dest = 'dir', help='Directory to start looking from')
-parser.add_argument('--analyze', choices=['IPs','arn','bucket','else'], help='If Mode of operation is analyze')
+parser.add_argument('--analyze', choices=['IPs','arn','bucket','anon','else'], help='If Mode of operation is analyze')
 parser.add_argument('--IPs',  dest = 'IPs', nargs='+', help='If youre analyzing IPs, need to pick some IPs')
 parser.add_argument('--arn',  dest = 'arn', help='If youre analyzing an arn, need to pick a arn')
 parser.add_argument('--bucket',  dest = 'bucket', help='If youre analyzing an bucket, need to pick a bucket')
+parser.add_argument('--query', choices=['string'], help='If Mode of operation is query')
+parser.add_argument('--strings',  dest = 'strings', nargs='+', help='If youre analyzing a strings, need to pick a eventName and string')
 
 
 args = parser.parse_args()
-
 
 # Create a seperate df for each event type, too much sparse data if all events in one frame
 def create_dataframes_by_event_name(directory):
@@ -157,6 +159,11 @@ def main():
         # Perform analysis on the loaded DataFrames
         analyze_data(dfs)
 
+    elif args.mode == 'query':
+        query_data()
+
+
+
     elif args.mode == 'clean':
         # removes everything we made
         files_and_dirs_to_cleanup = ['metadata.txt', 'saved_dfs', '__pycache__']
@@ -187,6 +194,7 @@ def basic_stats(dfs):
 
 
 
+
 # Function to analyze the data (to be implemented)
 def analyze_data(dfs):
    if args.analyze == 'IPs':
@@ -204,10 +212,17 @@ def analyze_data(dfs):
         print('Slicing '+ bucket_to_search)
         resulting_df = get_rows_by_bucket(dfs, bucket_to_search)
         create_bucket_event_plot(resulting_df, bucket_to_search)
+   elif args.analyze == 'anon':
+        search_and_plot_anonymous_events()
 
    else:
        # Perform analysis on DataFrames
        print_hello_world()
+
+def query_data():
+    if args.query == 'string':
+        print_rows_with_separator(args.strings[0],args.strings[1])
+    
 
 
 def clean(files_and_dirs):
