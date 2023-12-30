@@ -14,10 +14,11 @@ No more jq
 
 ![image](https://github.com/dbissell6/Thundaga/assets/50979196/38cf5f50-f263-4e58-b2f7-4b99612619ce)
 
+# Analyze
+
 ## Investigate Ips
 
 ![image](https://github.com/dbissell6/Thundaga/assets/50979196/dcbbb0a2-90b6-4b84-b268-ebd8f0fdf9df)
-
 
 ![image](https://github.com/dbissell6/Thundaga/assets/50979196/73bd403a-ea66-4678-8001-eec221f84556)
 
