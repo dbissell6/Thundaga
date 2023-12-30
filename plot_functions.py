@@ -112,23 +112,23 @@ def create_arn_plot(resulting_df, arn_to_search):
 
 ### Same thing for a bucket
 
-def get_rows_by_bucket(dfs, bucket_of_interest):
-    # Initialize an empty DataFrame to hold all matching rows
-    df_final = pd.DataFrame()
+def get_rows_by_bucket(dfs, bucket_of_interest, exclude_ips=None):
+    exclude_ips = exclude_ips or []  # List of IPs to exclude
+    df_final = pd.DataFrame()  # Initialize an empty DataFrame to hold all matching rows
 
     # Iterate over each dataframe and its name in the dictionary
     for df_name, df in dfs.items():
-        # Check if 'requestParameters' column exists in the dataframe
         if 'requestParameters_bucketName' in df.columns:
             # Filter rows where the bucket name is mentioned in 'requestParameters'
             matching_rows = df[df['requestParameters_bucketName'].astype(str).str.contains(bucket_of_interest)].copy()
-            # If there are matching rows, concatenate them to the final dataframe
+            # Exclude rows with IPs that are in the exclude_ips list
+            matching_rows = matching_rows[~matching_rows['sourceIPAddress'].isin(exclude_ips)]
             if not matching_rows.empty:
-                # Add a column to indicate the DataFrame source (event name)
-                matching_rows.loc[:, 'EventName'] = df_name
-                df_final = pd.concat([df_final, matching_rows], ignore_index=True)
+                matching_rows.loc[:, 'EventName'] = df_name  # Add a column to indicate the DataFrame source (event name)
+                df_final = pd.concat([df_final, matching_rows], ignore_index=True)  # Concatenate them to the final dataframe
 
     return df_final
+
 
 def create_bucket_event_plot(resulting_df, bucket_of_interest):
     # Extract unique event names and source IP addresses
@@ -178,7 +178,8 @@ def create_bucket_event_plot(resulting_df, bucket_of_interest):
 
 ### Create plots for anons
 
-def search_and_plot_anonymous_events(column_name='eventName'):
+def search_and_plot_anonymous_events(exclude_ips=None,column_name='eventName'):
+    exclude_ips = exclude_ips or []
     anonymous_entries = {}
     path = './saved_dfs'
     
@@ -198,6 +199,8 @@ def search_and_plot_anonymous_events(column_name='eventName'):
                 event_name = row.get(column_name, 'No-Event-Name-Column')
                 ip_address = row.get('sourceIPAddress', 'No-IP-Address-Column')
 
+                if ip_address in exclude_ips:
+                    continue
                 # Create a new DataFrame from the anonymous rows
                 anonymous_row = df.loc[[index]]
                 anonymous_row['EventName'] = event_name

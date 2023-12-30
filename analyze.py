@@ -23,6 +23,7 @@ parser.add_argument('--bucket',  dest = 'bucket', help='If youre analyzing an bu
 parser.add_argument('--query', choices=['string'], help='If Mode of operation is query')
 parser.add_argument('--strings',  dest = 'strings', nargs='+', help='If youre analyzing a strings, need to pick a eventName and string')
 
+parser.add_argument('--EXIPs',  dest = 'EXIPs', nargs='+', help='Optional Exclude IPs from the plots')
 
 args = parser.parse_args()
 
@@ -207,10 +208,11 @@ def analyze_data(dfs):
    elif args.analyze == 'bucket':
         bucket_to_search = args.bucket
         print('Slicing '+ bucket_to_search)
-        resulting_df = get_rows_by_bucket(dfs, bucket_to_search)
+        resulting_df = get_rows_by_bucket(dfs, bucket_to_search,args.EXIPs)
         create_bucket_event_plot(resulting_df, bucket_to_search)
    elif args.analyze == 'anon':
-        search_and_plot_anonymous_events()
+        exclude_ips = args.EXIPs
+        search_and_plot_anonymous_events(exclude_ips)
 
    else:
        # Perform analysis on DataFrames
