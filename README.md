@@ -6,6 +6,10 @@ Humans invested lots of evolutionary points into vision, let's use it.
 
 ![Screenshot 2023-12-28 190939](https://github.com/dbissell6/Thundaga/assets/50979196/6b068dc4-65e0-411e-b33a-6f6bde662edb)
 
+# Install
+
+![image](https://github.com/dbissell6/Thundaga/assets/50979196/c1db0a55-3a8f-4a9f-b065-d589d770228b)
+
 
 # Use
 
