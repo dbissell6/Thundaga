@@ -16,6 +16,11 @@ Humans invested lots of evolutionary points into vision, let's use it.
 
 ![image](https://github.com/dbissell6/Thundaga/assets/50979196/f6c57bd4-4695-469a-9a4a-f46822a96b14)
 
+## Hover zoom in
+
+![image](https://github.com/dbissell6/Thundaga/assets/50979196/8532c078-8a0a-42e0-bf32-e53b582a5667)
+
+
 
 # Chainsaw Sigma CSV
 
