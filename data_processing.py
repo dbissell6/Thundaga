@@ -91,3 +91,37 @@ def process_data(directory):
     # Consolidate logs into a single dataframe
     consolidated_logs_df = consolidate_logs(dataframes_by_event, required_columns)
     return consolidated_logs_df
+
+
+def query_and_print_logs(dataframes, search_term):
+    # Initialize a list to collect DataFrames
+    filtered_dataframes = []
+
+    for key, dataframe in dataframes.items():
+        query_mask = dataframe.astype(str).apply(
+            lambda row: row.str.contains(search_term, case=False, na=False).any(), axis=1
+        )
+        filtered_dataframe = dataframe[query_mask]
+        
+        # Only append non-empty DataFrames
+        if not filtered_dataframe.empty:
+            filtered_dataframes.append(filtered_dataframe)
+
+    # Use concat to combine the DataFrames in the list
+    if filtered_dataframes:  # Ensure the list is not empty
+        aggregated_df = pd.concat(filtered_dataframes, ignore_index=True)
+        aggregated_df = aggregated_df.sort_values(by='eventTime')
+        write_readable_logs_to_file(aggregated_df)  # Assuming print_readable_logs is defined elsewhere
+    else:
+        print("No records found with the search term.")
+
+def write_readable_logs_to_file(df):
+    with open('output.txt', 'w') as file:
+        for _, row in df.iterrows():
+            for col, value in row.items():
+                if pd.notna(value):
+                    file.write(f"{col}: {value}\n")
+            file.write('-' * 40 + '\n')  # Separator line for readability
+
+
+
