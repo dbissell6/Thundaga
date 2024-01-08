@@ -22,6 +22,8 @@ Humans invested lots of evolutionary points into vision, let's use it.
 
 ## Query
 
+Search for term in record, organized by time saved to output.txt
+
 ![image](https://github.com/dbissell6/Thundaga/assets/50979196/3214e7ea-0fb0-4c89-a40e-0fc89acd3057)
 
 
