@@ -10,7 +10,7 @@ Humans invested lots of evolutionary points into vision, let's use it.
 
 ![image](https://github.com/dbissell6/Thundaga/assets/50979196/c1db0a55-3a8f-4a9f-b065-d589d770228b)
 
-# AWS Logs
+# AWS Logs Plot
 
 ![image](https://github.com/dbissell6/Thundaga/assets/50979196/08658cac-9b93-4ea9-b9a2-8b2b4648dd32)
 
@@ -19,6 +19,14 @@ Humans invested lots of evolutionary points into vision, let's use it.
 ## Hover zoom in
 
 ![image](https://github.com/dbissell6/Thundaga/assets/50979196/8532c078-8a0a-42e0-bf32-e53b582a5667)
+
+## Stats
+Prints counts and stats of logs in counts.txt
+
+![image](https://github.com/dbissell6/Thundaga/assets/50979196/9e583dcf-112a-4dbe-93e3-c4b24112a96a)
+
+![image](https://github.com/dbissell6/Thundaga/assets/50979196/da7afb21-c66b-46a9-9a38-77fc0bfcd609)
+
 
 ## Query
 
