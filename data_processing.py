@@ -102,7 +102,6 @@ def query_and_print_logs(dataframes, search_term):
             lambda row: row.str.contains(search_term, case=False, na=False).any(), axis=1
         )
         filtered_dataframe = dataframe[query_mask]
-        
         # Only append non-empty DataFrames
         if not filtered_dataframe.empty:
             filtered_dataframes.append(filtered_dataframe)
@@ -124,4 +123,19 @@ def write_readable_logs_to_file(df):
             file.write('-' * 40 + '\n')  # Separator line for readability
 
 
+
+def create_stats_file(df):
+    df.fillna('Missing', inplace=True)
+    print(df.columns)
+    with open('counts.txt', 'w') as f:
+        f.write('IP Counts:\n')
+        df['sourceIPAddress'].value_counts().reset_index().to_csv(f, sep='\t', index=False, header=False)
+        f.write('\nAccount ID Counts:\n')
+        df['userIdentity_accountId'].value_counts().reset_index().to_csv(f, sep='\t', index=False, header=False)
+        f.write('\nARN Counts:\n')
+        df['userIdentity_arn'].value_counts().reset_index().to_csv(f, sep='\t', index=False, header=False)
+        f.write('\nUser Agent Counts:\n')
+        df['userAgent'].value_counts().reset_index().to_csv(f, sep='\t', index=False, header=False)
+        f.write('\nBucket Name Counts:\n')
+        df['requestParameters_bucketName'].value_counts().reset_index().to_csv(f, sep='\t', index=False, header=False)
 
