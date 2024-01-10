@@ -37,6 +37,11 @@ Search for term in record, organized by time saved to output.txt
 
 # Chainsaw Sigma CSV
 
+Get sigma.csv from chainsaw
+
+![image](https://github.com/dbissell6/Thundaga/assets/50979196/e1a83f97-1174-47b3-a7b3-a1dc8ac2b404)
+
+
 ![image](https://github.com/dbissell6/Thundaga/assets/50979196/89a9e757-5e87-4e18-9c72-260a516f8989)
 
 ![image](https://github.com/dbissell6/Thundaga/assets/50979196/85bb44d3-e0d2-4958-8fbd-126b7166025e)
